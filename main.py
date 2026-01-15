@@ -4,7 +4,8 @@ import random
 from pathlib import Path
 
 from engine.map.tilemap import TileMap
-from engine.services.input import EventMapper
+from engine.services.input import EventMapper, Event
+from engine.services.input import Criteria as cr
 from engine.services.display import DisplayService
 from engine.services.layer import Layer
 
@@ -14,10 +15,12 @@ tilemap_path = cwd / "engine" / "assets" / "tilemaps" / "test.png"
 tilemap = TileMap(tilemap_path, 16)
 
 dimensions = 768,624
-FPS = 12000
+FPS = 120
 
+eventmapper = EventMapper()
 display = DisplayService(
     dimensions=dimensions,
+    eventmapper=eventmapper,
     caption="eeeeee",
     vsync=False
 )
@@ -51,14 +54,22 @@ fill_layer_with_tiles(tile_layer2)
 
 display.add_layer(tile_layer)
 display.add_layer(tile_layer2)
-event = EventMapper()
 mouse = pygame.mouse
+def scroll_layer1(f, dx, dy): 
+    tile_layer.loopscroll(dx,dy)
+
+speed = 2
+layer1_events = [
+    Event(["K_UP"], cr.on_held, scroll_layer1, [0, -speed]),
+    Event(["K_RIGHT"], cr.on_held, scroll_layer1, [speed, 0]),
+    Event(["K_DOWN"], cr.on_held, scroll_layer1, [0, speed]),
+    Event(["K_LEFT"], cr.on_held, scroll_layer1, [-speed, 0]),
+]
+for event in layer1_events:
+    eventmapper.register_event(event)
 
 def main():
     while display.running:
-        tile_layer.loopscroll(1, 1)
-        tile_layer2.loopscroll(0, -1)
-
         display.tick()
         display.clock.tick(FPS)
         pygame.display.set_caption(f"{display.caption} - {display.clock.get_fps():.0f}fps (limit {FPS})")

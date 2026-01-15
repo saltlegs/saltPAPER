@@ -32,11 +32,31 @@ EVENT_TYPES_LISTENING = {
     pygame.CONTROLLERBUTTONUP: "button",
 }
 
+class Criteria():
+    @staticmethod
+    def on_press(f):
+        return True if f==1 else False
+    
+    @staticmethod
+    def on_held(f):
+        return True if f>0 else False
+    
+    @staticmethod
+    def on_release(f):
+        return True if f==-1 else False
+    
+    @staticmethod
+    def make_on_held_interval(x):
+        def on_held_interval(f):
+            return True if f % x == 0 else False
+        return on_held_interval
+
 class Event():
-    def __init__(self, triggers: str | list, criteria: Callable, callback: Callable):
+    def __init__(self, triggers: str | list, criteria: Callable, callback: Callable, args: list):
         self.triggers = triggers if isinstance(triggers, list) else [triggers]
         self.criteria = criteria
         self.callback = callback
+        self.args = args
 
 
 class EventMapper():
@@ -54,11 +74,13 @@ class EventMapper():
 
     def check_events(self):
         for trigger, frames in self.input_roster.items():
+            if frames == 0:
+                continue
             for event in self.events:
                 if trigger not in event.triggers:
                     continue
                 if event.criteria(frames):
-                    event.callback(frames)
+                    event.callback(frames, *event.args)
 
 
     def controllercheck(self):

@@ -9,6 +9,7 @@ class DisplayService():
     def __init__(
             self,
             dimensions,
+            eventmapper,
             func=None,
             caption="saltpaper",
             vsync=True # for testing
@@ -16,6 +17,7 @@ class DisplayService():
         self.dimensions = dimensions
         self.func = func
         self.caption = caption
+        self.eventmapper = eventmapper
 
         self.layers = []
 
@@ -54,6 +56,7 @@ class DisplayService():
 
     def tick(self):
         self.events = pygame.event.get()
+        self.eventmapper.tick(self.events)
         for event in self.events:
             if event.type == pygame.QUIT:
                 self.running = False
