@@ -19,18 +19,42 @@ KEY_VALUE_TO_NAME = {
     for name, value in vars(pl).items()
     if name.startswith("K_")
 }
+
 BUTTON_VALUE_TO_NAME = {
     value: name
     for name, value in vars(pl).items()
     if name.startswith("CONTROLLER_BUTTON_")
 }
 
+MOUSE_VALUE_TO_NAME = {
+    1: "MOUSE_LEFT",
+    2: "MOUSE_MIDDLE",
+    3: "MOUSE_RIGHT",
+    4: "MOUSE_SCROLL_UP",
+    5: "MOUSE_SCROLL_DOWN"
+}
+
+
 EVENT_TYPES_LISTENING = {
     pygame.KEYDOWN: "key",
     pygame.KEYUP: "key",
     pygame.CONTROLLERBUTTONDOWN: "button",
     pygame.CONTROLLERBUTTONUP: "button",
+    pygame.MOUSEBUTTONDOWN: "mouse",
+    pygame.MOUSEBUTTONUP: "mouse",
 }
+
+if __name__ == "__main__":
+    with open("validevents.txt", "w") as f:
+        f.write("=== KEY EVENTS ===\n")
+        for item in KEY_VALUE_TO_NAME.values():
+            f.write(f"{item}\n")
+        f.write("=== BUTTON EVENTS ===\n")
+        for item in BUTTON_VALUE_TO_NAME.values():
+            f.write(f"{item}\n")
+        f.write("=== KEY EVENTS ===\n")
+        for item in MOUSE_VALUE_TO_NAME.values():
+            f.write(f"{item}\n")
 
 class Criteria():
     @staticmethod
@@ -68,6 +92,8 @@ class EventMapper():
             self.input_roster[item] = 0
         for item in BUTTON_VALUE_TO_NAME.values():
             self.input_roster[item] = 0
+        for item in MOUSE_VALUE_TO_NAME.values():
+            self.input_roster[item] = 0
 
     def register_event(self, event: Event):
         self.events.append(event)
@@ -102,26 +128,23 @@ class EventMapper():
             elif self.input_roster[item] < 0:   # negative / unpressed after first press
                 self.input_roster[item] -= 1
 
+
     def process_events(self, events):
         for event in events:
             event_type = event.type
-
             if not event_type in EVENT_TYPES_LISTENING.keys():
                 continue
-
             target = EVENT_TYPES_LISTENING[event.type]
-
             value = getattr(event, target, None)
-            
             if target == "key":
                 name = KEY_VALUE_TO_NAME.get(value, "unknown")
             elif target == "button":
                 name = BUTTON_VALUE_TO_NAME.get(value, "unknown")
+            elif target == "mouse":
+                name = MOUSE_VALUE_TO_NAME.get(value, "unknown")
             else:
                 name = "unknown"
-
-            updown = -1 if event_type in [pygame.KEYUP, pygame.CONTROLLERBUTTONUP] else 1
-            
+            updown = -1 if event_type in [pygame.KEYUP, pygame.CONTROLLERBUTTONUP, pygame.MOUSEBUTTONUP] else 1
             self.input_roster[name] = updown
         
 

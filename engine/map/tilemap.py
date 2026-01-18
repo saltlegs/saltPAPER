@@ -5,8 +5,12 @@ class TileType():
     def __init__(self, id, size):
         self.surface = pygame.Surface((size, size), pygame.SRCALPHA)
 
-    def get_surface(self) -> pygame.surface.Surface:
-        return self.surface
+    def get_surface(self, rot:int=0) -> pygame.surface.Surface:
+        if rot == 0:
+            return self.surface
+        else:
+            return pygame.transform.rotate(self.surface, (90 * rot))
+
 
 class TileMap():
     def __init__(self, path, size):

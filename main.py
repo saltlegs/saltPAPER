@@ -60,10 +60,10 @@ def scroll_layer1(f, dx, dy):
 
 speed = 2
 layer1_events = [
-    Event(["K_UP"], cr.on_held, scroll_layer1, [0, -speed]),
-    Event(["K_RIGHT"], cr.on_held, scroll_layer1, [speed, 0]),
-    Event(["K_DOWN"], cr.on_held, scroll_layer1, [0, speed]),
-    Event(["K_LEFT"], cr.on_held, scroll_layer1, [-speed, 0]),
+    Event(["K_UP", "CONTROLLER_BUTTON_DPAD_UP"], cr.on_held, scroll_layer1, [0, -speed]),
+    Event(["K_RIGHT", "CONTROLLER_BUTTON_DPAD_RIGHT"], cr.on_held, scroll_layer1, [speed, 0]),
+    Event(["K_DOWN", "CONTROLLER_BUTTON_DPAD_DOWN"], cr.on_held, scroll_layer1, [0, speed]),
+    Event(["K_LEFT", "CONTROLLER_BUTTON_DPAD_LEFT"], cr.on_held, scroll_layer1, [-speed, 0]),
 ]
 for event in layer1_events:
     eventmapper.register_event(event)
@@ -78,4 +78,5 @@ def main():
     sys.exit()
 
 if __name__ == "__main__":
+    # test, not final
     main()
