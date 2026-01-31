@@ -5,7 +5,7 @@ from engine.ecs.entity import Entity
 def spawn(*components):
     entity = Entity()
 
-        entities = {} 
+    entities = {} 
 
     @classmethod
     def _assign_id(cls, entity, override=None) -> int | str | None:

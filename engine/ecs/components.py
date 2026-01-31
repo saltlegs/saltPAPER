@@ -5,7 +5,11 @@ class Position():
     x: int = 0
     y: int = 0
 
+@dataclass
+class Image():
+    asset_id: str = "dummy"
 
-print(dict(Position(5,3)))
-
-
+@dataclass
+class Hitbox():
+    width: int = 0
+    height: int = 0
