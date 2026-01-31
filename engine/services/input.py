@@ -88,6 +88,10 @@ class EventMapper():
         self.gamepad = None
         self.input_roster = {}
         self.events = []
+        try:
+            ctrl.init()
+        except Exception:
+            pass
         for item in KEY_VALUE_TO_NAME.values():
             self.input_roster[item] = 0
         for item in BUTTON_VALUE_TO_NAME.values():
@@ -110,9 +114,17 @@ class EventMapper():
 
 
     def controllercheck(self):
-        if ctrl.get_count() > 0 and self.gamepad is None:
-            self.gamepad = ctrl.Controller(0)
-        elif ctrl.get_count() == 0:
+        try:
+            count = ctrl.get_count()
+        except pygame.error:
+            count = 0
+
+        if count > 0 and self.gamepad is None:
+            try:
+                self.gamepad = ctrl.Controller(0)
+            except Exception:
+                self.gamepad = None
+        elif count == 0:
             self.gamepad = None
 
     def tick(self, events):

@@ -1,5 +1,6 @@
 import pygame
 import sys
+from statistics import mean
 from pathlib import Path
 
 if __name__ == "__main__":
@@ -10,14 +11,16 @@ class DisplayService():
             self,
             dimensions,
             eventmapper,
+            target_frame_rate:int=120,
             func=None,
-            caption="saltpaper",
+            caption="saltpaper engine display",
             vsync=True # for testing
     ):
         self.dimensions = dimensions
         self.func = func
         self.caption = caption
         self.eventmapper = eventmapper
+        self.target_frame_rate = target_frame_rate
 
         self.layers = []
 
@@ -28,6 +31,8 @@ class DisplayService():
 
         pygame.display.set_caption(caption)
         self.clock = pygame.time.Clock()
+        self.delta = 1
+        self.deltas = []
 
         self.running = True
         self.dirty = True
@@ -75,20 +80,31 @@ class DisplayService():
         if self.func:
             self.func(self)
 
-        pygame.display.flip()
+        pygame.display.flip() 
+        delta_entry = self.clock.tick(self.target_frame_rate) / 1000
+        self.deltas.append(delta_entry)
+        if len(self.deltas) > 10:
+            self.deltas.pop(0)
+        self.delta = mean(self.deltas) # will raise if empty but deltas should never be empty at this point of execution 
 
 if __name__ == "__main__":
     from pathlib import Path
     from engine.services.layer import Layer
     from engine.map.tilemap import TileMap
+    from engine.services.input import EventMapper
 
     cwd = Path.cwd()
     duck_image_path = cwd / "engine" / "assets" / "images" / "duck.jpg"
     duck_image = pygame.image.load(duck_image_path)
     test_image_path = cwd / "engine" / "assets" / "images" / "test.png"
     dimensions = duck_image.get_size()
-    display = DisplayService(dimensions, vsync=False)
-    fps = 5000
+    eventmapper = EventMapper()
+    display = DisplayService(
+        dimensions=dimensions,
+        eventmapper=eventmapper,
+        vsync=False,
+        target_frame_rate=120,
+    )
 
     tilemap = TileMap(test_image_path, 16)
 
@@ -109,9 +125,8 @@ if __name__ == "__main__":
     display.add_layer(layer2)
 
     while display.running:
-        layer1.loopscroll(1,0)
-        layer2.loopscroll(0,1)
+        layer1.loopscroll(50,0, display.delta)
+        layer2.loopscroll(0,50, display.delta)
         display.tick()
-        display.clock.tick(fps)
-        pygame.display.set_caption(f"{display.caption} - {display.clock.get_fps():.0f}fps (limit {fps})")
+        pygame.display.set_caption(f"{display.caption} - {display.clock.get_fps():.0f}fps (limit {display.target_frame_rate}) - delta {display.delta:.2f})")
     

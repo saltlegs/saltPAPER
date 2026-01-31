@@ -20,6 +20,10 @@ class Layer:
         self.func = func
         self.render_priority = render_priority
         self.tick_priority = tick_priority
+        
+        # loopscroll()
+        self._loopscroll_accum_x = 0.0
+        self._loopscroll_accum_y = 0.0
 
     def tick(self):
         if self.func:
@@ -33,13 +37,26 @@ class Layer:
         surf.set_alpha(int(self.opacity_percent * 2.55))
         return surf
     
-    def loopscroll(self, dx, dy):
+
+    def loopscroll(self, dx, dy, dt=1.0):
+        self._loopscroll_accum_x += dx * dt
+        self._loopscroll_accum_y += dy * dt
+
+        scroll_x = int(self._loopscroll_accum_x)
+        scroll_y = int(self._loopscroll_accum_y)
+
+        self._loopscroll_accum_x -= scroll_x
+        self._loopscroll_accum_y -= scroll_y
+
+        if scroll_x == 0 and scroll_y == 0:
+            return
+
         surf = self.surface
-        scroll_area_x = (abs(dx), surf.get_height())
-        scroll_area_y = (surf.get_width(), abs(dy))
-        if not dx == 0:
+        scroll_area_x = (abs(scroll_x), surf.get_height())
+        scroll_area_y = (surf.get_width(), abs(scroll_y))
+        if scroll_x != 0:
             tempx = pygame.Surface(scroll_area_x, pygame.SRCALPHA)
-        if not dy == 0:
+        if scroll_y != 0:
             tempy = pygame.Surface(scroll_area_y, pygame.SRCALPHA)
 
         top = 0
@@ -47,22 +64,22 @@ class Layer:
         right = surf.get_width()
         bottom = surf.get_height()
 
-        if dx > 0: # image is moving right, copy rightmost chunk to left
-            tempx.blit(surf, (0,0), ((right-dx, top), (dx, bottom)))
-            surf.scroll(dx, 0)
+        if scroll_x > 0: # image is moving right, copy rightmost chunk to left
+            tempx.blit(surf, (0,0), ((right-scroll_x, top), (scroll_x, bottom)))
+            surf.scroll(scroll_x, 0)
             surf.blit(tempx, (left,top))
-        elif dx < 0: # image is moving left, copy leftmost chunk to right
-            tempx.blit(surf, (0,0), ((0, top), (-dx, bottom)))
-            surf.scroll(dx, 0)
-            surf.blit(tempx, (right+dx,top))
+        elif scroll_x < 0: # image is moving left, copy leftmost chunk to right
+            tempx.blit(surf, (0,0), ((0, top), (-scroll_x, bottom)))
+            surf.scroll(scroll_x, 0)
+            surf.blit(tempx, (right+scroll_x,top))
         
-        if dy > 0: # image is moving down, copy bottom chunk to top
-            tempy.blit(surf, (0,0), ((left, bottom-dy), (right, dy)))
-            surf.scroll(0, dy)
+        if scroll_y > 0: # image is moving down, copy bottom chunk to top
+            tempy.blit(surf, (0,0), ((left, bottom-scroll_y), (right, scroll_y)))
+            surf.scroll(0, scroll_y)
             surf.blit(tempy, (left, top))
-        elif dy < 0: # image is moving up, copy top chunk to bottom
-            tempy.blit(surf, (0,0), ((left, 0), (right, -dy)))
-            surf.scroll(0, dy)
-            surf.blit(tempy, (left, bottom+dy))
-        
+        elif scroll_y < 0: # image is moving up, copy top chunk to bottom
+            tempy.blit(surf, (0,0), ((left, 0), (right, -scroll_y)))
+            surf.scroll(0, scroll_y)
+            surf.blit(tempy, (left, bottom+scroll_y))
+
         self.surface = surf

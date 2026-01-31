@@ -22,7 +22,8 @@ display = DisplayService(
     dimensions=dimensions,
     eventmapper=eventmapper,
     caption="eeeeee",
-    vsync=False
+    vsync=False,
+    target_frame_rate=60,
 )
 
 TILE_SIZE = 48
@@ -71,8 +72,7 @@ for event in layer1_events:
 def main():
     while display.running:
         display.tick()
-        display.clock.tick(FPS)
-        pygame.display.set_caption(f"{display.caption} - {display.clock.get_fps():.0f}fps (limit {FPS})")
+        pygame.display.set_caption(f"{display.caption} - {display.clock.get_fps():.0f}fps (limit {FPS}) - delta {display.delta:.2f})")
     
     pygame.quit()
     sys.exit()
