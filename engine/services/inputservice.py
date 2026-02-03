@@ -166,7 +166,7 @@ def controllertest():
     from engine.debug.textwindow import TextWindow
 
     tw = TextWindow(width=60, height=25)
-    em = EventMapper()
+    em = InputService()
 
     while tw.running:
         tw.tick()

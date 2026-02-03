@@ -1,2 +1,2 @@
-from position import Position
-from sprite import Sprite
+from .position import Position
+from .sprite import Sprite

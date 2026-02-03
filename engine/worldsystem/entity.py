@@ -1,9 +1,8 @@
-from engine.worldsystem.world import World
 
 class Entity():
-    def __init__(self, world: World):
+    def __init__(self, world):
         self.components = {}
-        world.entities.append
+        world.entities.append(self)
 
     def add(self, component):
         self.components[type(component)] = component

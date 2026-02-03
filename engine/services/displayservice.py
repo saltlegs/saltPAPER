@@ -24,6 +24,8 @@ class DisplayService():
 
         self.layers = []
 
+        self.refresh_sorting()
+
         pygame.init()
 
 
@@ -60,6 +62,9 @@ class DisplayService():
         return self.layers
 
     def tick(self):
+        if len(self.layers) == 0:
+            raise ValueError("the display service has no layers to display. make sure they are added with displayservice.add_layer(layer)")
+
         self.events = pygame.event.get()
         self.eventmapper.tick(self.events)
         for event in self.events:
@@ -97,7 +102,7 @@ if __name__ == "__main__":
     duck_image = pygame.image.load(duck_image_path)
     test_image_path = cwd / "engine" / "assets" / "images" / "test.png"
     dimensions = duck_image.get_size()
-    eventmapper = EventMapper()
+    eventmapper = InputService()
     display = DisplayService(
         dimensions=dimensions,
         eventmapper=eventmapper,

@@ -1,8 +1,12 @@
 class Position():
-    def __init__(self, entity, layer:int=0,x:int=0, y:int=0):
+    def __init__(self, layer:int=0,x:int=0, y:int=0):
         self.layer = layer
         self.x = x
         self.y = y
+
+    @property
+    def position(self):
+        return (self.x, self.y)
 
     def set_layer(self, layer):
         self.layer = layer

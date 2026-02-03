@@ -11,8 +11,8 @@ filetypes = {
     "image": [".png", ".jpg", ".bmp", ".gif"],
     "music": [".wav", ".ogg", ".mp3"],
     "sound": [".wav", ".ogg", ".mp3"],
-    "tilesheet": [".tls"],
-    "room": [".room"]
+    "tilesheet": [".tls"], # todo
+    "room": [".room"] #todo
 }
 
 class AssetService():
@@ -65,18 +65,29 @@ class AssetService():
     
 def _test():
     from engine.services.displayservice import DisplayService
+    from engine.services.layer import Layer
     from engine.services.inputservice import InputService
-    from engine.worldsystem.basics.
+    from engine.services.renderservice import RenderService
+    from engine.worldsystem.functions.test import make_test_entity
+    from engine.worldsystem.world import World
+
     ins = InputService()
     ds = DisplayService(
         dimensions=(400,300),
         inputservice = ins,
         target_frame_rate=60,
-        caption="assetservice test"
+        caption="asset service test"
     )
+    main_layer = Layer(
+        dimensions=ds.dimensions
+    )
+    ds.add_layer(main_layer)
+    world = World()
     ass = AssetService()
+    rs = RenderService(world, ass)
 
+    test_entity = make_test_entity(world, main_layer, 100,100)
 
-
-    while ds.running():
+    while ds.running:
         ds.tick()
+        rs.tick()
