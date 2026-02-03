@@ -10,7 +10,7 @@ class DisplayService():
     def __init__(
             self,
             dimensions,
-            eventmapper,
+            inputservice,
             target_frame_rate:int=120,
             func=None,
             caption="saltpaper engine display",
@@ -19,7 +19,7 @@ class DisplayService():
         self.dimensions = dimensions
         self.func = func
         self.caption = caption
-        self.eventmapper = eventmapper
+        self.eventmapper = inputservice
         self.target_frame_rate = target_frame_rate
 
         self.layers = []
@@ -85,13 +85,12 @@ class DisplayService():
         self.deltas.append(delta_entry)
         if len(self.deltas) > 10:
             self.deltas.pop(0)
-        self.delta = mean(self.deltas) # will raise if empty but deltas should never be empty at this point of execution 
-
+        self.delta = mean(self.deltas)
 if __name__ == "__main__":
     from pathlib import Path
     from engine.services.layer import Layer
     from engine.map.tilemap import TileMap
-    from engine.services.input import EventMapper
+    from engine.services.inputservice import InputService
 
     cwd = Path.cwd()
     duck_image_path = cwd / "engine" / "assets" / "images" / "duck.jpg"

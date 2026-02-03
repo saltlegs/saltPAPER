@@ -83,7 +83,7 @@ class Event():
         self.args = args
 
 
-class EventMapper():
+class InputService():
     def __init__(self):
         self.gamepad = None
         self.input_roster = {}
