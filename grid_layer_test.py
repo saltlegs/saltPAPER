@@ -3,11 +3,11 @@ import sys
 import random
 from pathlib import Path
 
-from engine.map.tilemap import TileMap
-from engine.services.inputservice import InputService, Event
-from engine.services.inputservice import Criteria as cr
-from engine.services.displayservice import DisplayService
-from engine.services.layer import Layer
+from saltpaper.map.tilemap import TileMap
+from saltpaper.services.inputservice import InputService, Event
+from saltpaper.services.inputservice import Criteria as cr
+from saltpaper.services.displayservice import DisplayService
+from saltpaper.services.layer import Layer
 
 
 cwd = Path.cwd()

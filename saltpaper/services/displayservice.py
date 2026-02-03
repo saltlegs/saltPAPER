@@ -93,9 +93,9 @@ class DisplayService():
         self.delta = mean(self.deltas)
 if __name__ == "__main__":
     from pathlib import Path
-    from engine.services.layer import Layer
-    from engine.map.tilemap import TileMap
-    from engine.services.inputservice import InputService
+    from saltpaper.services.layer import Layer
+    from saltpaper.map.tilemap import TileMap
+    from saltpaper.services.inputservice import InputService
 
     cwd = Path.cwd()
     duck_image_path = cwd / "engine" / "assets" / "images" / "duck.jpg"

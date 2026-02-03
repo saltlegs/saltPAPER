@@ -163,7 +163,7 @@ class InputService():
 
 def controllertest():
     ctrl.init()
-    from engine.debug.textwindow import TextWindow
+    from saltpaper.debug.textwindow import TextWindow
 
     tw = TextWindow(width=60, height=25)
     em = InputService()

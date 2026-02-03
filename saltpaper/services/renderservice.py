@@ -1,7 +1,8 @@
 import pygame
 
-from engine.services.layer import Layer
-from engine.services.assetservice import AssetService
+from saltpaper.services.layer import Layer
+from saltpaper.services.assetservice import AssetService
+from saltpaper.worldsystem.components.sprite import Sprite
 
 class RenderService():
     def __init__(self, world, assetservice: AssetService):
@@ -29,5 +30,5 @@ class RenderService():
             self.render(renderable.layer, renderable.position, renderable.asset_id)
 
     def tick(self):
-        self._render_renderables(self.world.collect_renderables())
+        self._render_renderables(self.world.collect_component_type(Sprite))
         self._process_queue()

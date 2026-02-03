@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 
 cwd = Path.cwd()
-engine_assets = cwd / "engine" / "assets"
+engine_assets = cwd / "saltpaper" / "assets"
 game_assets = cwd / "game" / "assets"
 
 
@@ -63,31 +63,3 @@ class AssetService():
         # tilesheet etc later
         return path
     
-def _test():
-    from engine.services.displayservice import DisplayService
-    from engine.services.layer import Layer
-    from engine.services.inputservice import InputService
-    from engine.services.renderservice import RenderService
-    from engine.worldsystem.functions.test import make_test_entity
-    from engine.worldsystem.world import World
-
-    ins = InputService()
-    ds = DisplayService(
-        dimensions=(400,300),
-        inputservice = ins,
-        target_frame_rate=60,
-        caption="asset service test"
-    )
-    main_layer = Layer(
-        dimensions=ds.dimensions
-    )
-    ds.add_layer(main_layer)
-    world = World()
-    ass = AssetService()
-    rs = RenderService(world, ass)
-
-    test_entity = make_test_entity(world, main_layer, 100,100)
-
-    while ds.running:
-        ds.tick()
-        rs.tick()
