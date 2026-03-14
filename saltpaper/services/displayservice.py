@@ -22,7 +22,7 @@ class DisplayService():
             iconpath=None
     ):
         self.dimensions = dimensions
-        self.caption = caption
+        self._caption = caption
         self.inputservice:'InputService' = inputservice
         self.target_frame_rate = target_frame_rate
 
@@ -45,6 +45,15 @@ class DisplayService():
 
         self.running = True
         self.dirty = True
+
+    @property
+    def caption(self):
+        return self._caption
+
+    @caption.setter
+    def caption(self, value):
+        self._caption = value
+        pygame.display.set_caption(value)
 
     def mount(self, func=None):
         if not func: return
@@ -103,3 +112,5 @@ class DisplayService():
         if len(self.deltas) > 10:
             self.deltas.pop(0)
         self.delta = mean(self.deltas)
+
+        return self.delta

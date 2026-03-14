@@ -1,8 +1,14 @@
 
 class Entity():
+    _id_counter = 0
+
     def __init__(self, world):
+        self.id = Entity._id_counter
+        Entity._id_counter += 1
         self.components = {}
-        world.entities.append(self)
+        self.world = world
+        self.killed = False
+        world.entities[self.id] = self
 
     def add(self, component):
         self.components[type(component)] = component
@@ -24,6 +30,10 @@ class Entity():
         comp = self.get(component_type)
         if comp:
             self.components.pop(type(comp), None)
+
+    def kill(self):
+        self.killed = True
+        self.world.entities.pop(self.id, None)
 
     def __getattr__(self, name):
         for component in self.components.values():

@@ -27,6 +27,9 @@ MOUSE_VALUE_TO_NAME = {
     5: "MOUSE_SCROLL_DOWN"
 }
 
+OTHER_EVENTS = {
+    0x5000: "MOUSE_MOVE",
+}
 
 EVENT_TYPES_LISTENING = {
     pygame.KEYDOWN: "key",
@@ -45,7 +48,7 @@ if __name__ == "__main__":
         f.write("=== BUTTON EVENTS ===\n")
         for item in BUTTON_VALUE_TO_NAME.values():
             f.write(f"{item}\n")
-        f.write("=== KEY EVENTS ===\n")
+        f.write("=== MOUSE EVENTS ===\n")
         for item in MOUSE_VALUE_TO_NAME.values():
             f.write(f"{item}\n")
 
@@ -63,6 +66,8 @@ class InputService():
         for item in BUTTON_VALUE_TO_NAME.values():
             self.input_roster[item] = 0
         for item in MOUSE_VALUE_TO_NAME.values():
+            self.input_roster[item] = 0
+        for item in OTHER_EVENTS.values():
             self.input_roster[item] = 0
 
     @property
@@ -97,6 +102,13 @@ class InputService():
                 self.gamepad = None
         elif count == 0:
             self.gamepad = None
+
+    def mouse_move(self):
+        self.mouse_relative_movement = pygame.mouse.get_rel()
+        if self.mouse_relative_movement == (0,0):
+            self.events["MOUSE_MOVE"] = -1
+        else:
+            self.events["MOUSE_MOVE"] = 1
 
     def tick(self, events):
         self.controllercheck()
