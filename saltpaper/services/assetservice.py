@@ -1,4 +1,5 @@
 import pygame
+import moderngl
 import os
 from pathlib import Path
 
@@ -11,7 +12,8 @@ filetypes = {
 }
 
 class AssetService():
-    def __init__(self, assets_folder_path):
+    def __init__(self, ctx, assets_folder_path):
+        self.ctx = ctx
         self.cache = {}
         self.roots = []
 
@@ -53,7 +55,7 @@ class AssetService():
                             self.cache[id].append(asset)
                         else:
                             i = -1
-                    if len(self.cache[id] <= 1): raise ValueError("animated asset must have more than one frame")
+                    if len(self.cache[id]) <= 1: raise ValueError("animated asset must have more than one frame")
                     return self.cache[id][frame]
                 else:
                     path = root / kind / f"{name}{ext}"
@@ -79,7 +81,12 @@ class AssetService():
 
     def _load_asset(self, kind, path: Path):
         if kind == "image":
-            return pygame.image.load(path).convert_alpha()
+            surf = pygame.image.load(path).convert_alpha()
+            w, h = surf.get_size()
+            data = pygame.image.tobytes(surf, "RGBA", False)
+            texture = self.ctx.texture((w, h), 4, data)
+            texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
+            return texture
 
         if kind == "music":
             pygame.mixer.music.load(path)

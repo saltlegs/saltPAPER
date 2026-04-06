@@ -1,8 +1,11 @@
 import pygame
+import moderngl
+import numpy as np
 import sys
 from statistics import mean
 from pathlib import Path
 from typing import TYPE_CHECKING
+from saltpaper.services.shaders import Shaders
 
 if TYPE_CHECKING:
     from saltpaper import InputService
@@ -36,7 +39,22 @@ class DisplayService():
         if iconpath is not None:
             iconsurf = pygame.image.load(iconpath)
             pygame.display.set_icon(iconsurf)
-        self.display = pygame.display.set_mode(dimensions, vsync=vsync)
+        self.display = pygame.display.set_mode(dimensions, pygame.OPENGL | pygame.DOUBLEBUF, vsync=int(vsync))
+        self.ctx = moderngl.create_context()
+
+        self.shaders = Shaders(self.ctx)
+
+        quad = np.array([
+            -1.0,  1.0,  0.0, 1.0,
+            -1.0, -1.0,  0.0, 0.0,
+             1.0,  1.0,  1.0, 1.0,
+             1.0, -1.0,  1.0, 0.0,
+        ], dtype='f4')
+        vbo = self.ctx.buffer(quad.tobytes())
+        self.screen_quad = self.ctx.vertex_array(
+            self.shaders.composite,
+            [(vbo, '2f 2f', 'in_position', 'in_uv')]
+        )
 
         pygame.display.set_caption(caption)
         self.clock = pygame.time.Clock()
@@ -98,13 +116,18 @@ class DisplayService():
             if layer.ticking:
                 layer.tick(self.delta)
 
+        self.ctx.screen.use()
+        self.ctx.clear(0.0, 0.0, 0.0, 1.0)
+        self.ctx.blend_func = (moderngl.ONE, moderngl.ONE_MINUS_SRC_ALPHA)
+
         for layer in self.layers_by_render:
             if not layer.visible:
                 continue
-            surf = layer.render()
-            offset = layer.offset
-            self.display.blit(surf, offset)
-            
+            layer.texture.use(0)
+            self.shaders.composite['layer_texture'].value = 0
+            self.shaders.composite['opacity'].value = layer.opacity_percent / 100.0
+            self.screen_quad.render(moderngl.TRIANGLE_STRIP)
+
         for func in self.funcs:
             func(self, self.delta)
 

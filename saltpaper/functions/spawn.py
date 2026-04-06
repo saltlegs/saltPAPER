@@ -27,7 +27,7 @@ def make_button(
     from saltpaper.worldsystem.components import Clickable
     
     ent = Entity(world)
-    asset_dims = assetservice.get_asset(asset_id).get_size()
+    asset_dims = assetservice.get_asset(asset_id).size
     position_obj = Position(layer, position, *asset_dims)
     bounds = (*position, *asset_dims)
     sprite = Sprite(asset_id)

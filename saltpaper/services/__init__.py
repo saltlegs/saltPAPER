@@ -4,5 +4,6 @@ from .layer import Layer
 from .inputservice import InputService
 from .event import Criteria
 from .renderservice import RenderService
+from .shapeservice import ShapeService
 from .stateservice import StateService
 from .event import Event
