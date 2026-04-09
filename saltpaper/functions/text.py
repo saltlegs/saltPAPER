@@ -12,12 +12,14 @@ class Style:
             self,
             font_path,
             size:int,
-            colour:tuple[int,int,int] | tuple[int,int,int,int],
+            colour:tuple[int,int,int] | tuple[int,int,int,int]|str,
             antialias:bool=True,
             wraplength:int=0,
             effects:str|list|None=None,
     ):
         self.font = pfont.Font(font_path, size)
+        if type(colour) is str:
+            colour = pygame.Color(colour) # type: ignore
         self.colour = colour
         self.antialias = antialias
         self.wraplength = wraplength
@@ -44,6 +46,6 @@ class Style:
                 color=(20,20,20),
                 wraplength=self.wraplength
             )
-            layer.surface.blit(dropshadow_surf, (pos[0]+1, pos[1]+1))
+            layer.surface.blit(dropshadow_surf, (pos[0]+2, pos[1]+2))
         
         layer.surface.blit(font_surf, pos)
